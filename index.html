@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Gastos y Notas</title>
+  <link rel="stylesheet" href="./styles/styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div class="container">
+    <!-- Encabezado -->
+    <div class="header">
+      <p class="fecha" id="fechaDeInicioDeSistema">13 de Marzo, 2025</p>
+      <h1>Mi Aplicación</h1>
+    </div>
+
+    <!-- Icono de Configuración -->
+    <div class="config-icon-container">
+      <button id="config-icon" class="config-icon">
+        <img src="./image/gear.png" alt="Configuración">
+      </button>
+    </div>
+
+    <!-- Modal para cerrar o reiniciar el sistema -->
+    <div id="modal-cerrar-sistema" class="modal-cerrar-sistema" style="display: none;">
+      <div class="modal-cerrar-sistema-content">
+      <h2 style="text-align: center;">Configuración del sistema</h2>
+      <input type="time" id="input-cerrar-sistema" style="width: 100%; margin-bottom: 20px;">
+
+      <h3 style="text-align: center;">Reiniciar sistema</h3>
+      <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+        <label>
+        <input type="radio" name="opcion-sistema" value="reiniciar" id="opcionReiniciarSistema"> Reiniciar
+        </label>
+        <label>
+        <input type="radio" name="opcion-sistema" value="mantener" id="opcionMantenerSistema"> Mantener
+        </label>
+      </div>
+
+      <div class="modal-buttons" style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+        <button id="aceptar-cerrar-sistema">Aceptar</button>
+        <button id="cancelar-cerrar-sistema">Cancelar</button>
+      </div>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <div class="navbar">
+      <button id="btn-gastos" class="nav-btn">Gastos</button>
+      <button id="btn-notas" class="nav-btn">Productos</button>
+      <button id="btn-recordatorios" class="nav-btn">Recordatorios</button>
+    </div>
+
+  <!-- Sección de Gastos -->
+  <div id="section-gastos" style="display: block;">
+    <div class="scroll-historial-gastos" id="scroll-historial-gastos"></div>
+
+    <div class="gastos-scrollable">
+      <table></table>
+    </div>
+  </div>
+
+    <!-- Sección de Notas -->
+    <div id="section-notas" style="display: none;">
+      <button id="add-category-btn" class="add-category-btn">Agregar Categoría</button>
+      <div id="categories-scrollable" class="categories-scrollable">
+      </div>
+    </div>
+    
+    <!-- Sección de Recordatorios -->
+    <div id="section-recordatorios" style="display: none;">
+      <div id="recordatorios-scrollable" class="categories-scrollable"></div>
+    </div>
+
+    <!-- Botones principales -->
+    <div class="footer">
+      <button id="nuevo-gasto-btn" class="action-btn">Nuevo Gasto</button>
+      <button id="nueva-nota-btn" class="action-btn" style="display: none;">Nuevo Producto</button>
+      <button id="nuevo-recordatorio-btn" class="action-btn" style="display: none;">Nuevo Recordatorio</button>
+    </div>
+  </div>
+  
+  <!-- Modal Popup -->
+<div id="category-modal" class="modal">
+  <div class="modal-content">
+    <h2>Agregar Nueva Categoría</h2>
+    <input type="text" id="category-name" placeholder="Nombre de la categoría" >
+    <div class="modal-buttons">
+      <button id="close-modal">Cancelar</button>
+      <button id="add-category-confirm">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Popup para ver detalles de un gasto -->
+<div id="gasto-modal" class="gasto-modal">
+  <div class="gasto-modal-content">
+    <span id="cerrar-gasto-modal" class="cerrar-gasto-btn">&times;</span>
+    <h2>Detalles del Gasto</h2>
+    <p id="gasto-modal-texto"></p>
+    <div class="modal-buttons-gastos">
+      <button id="actualizar-gasto-btn" class="modal-btn">Actualizar</button>
+      <button id="eliminar-gasto-btn" class="modal-btn eliminar-btn">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para agregar un nuevo elemento en una categoría (Notas) -->
+<div id="modal-nuevo-elemento-nota" class="modal-overlay-nota">
+  <div class="modal-content-nota">
+    <h2>Agregar Nuevo Producto</h2>
+    
+    <label for="input-nombre-elemento-nota">Nombre:</label>
+    <input type="text" id="input-nombre-elemento-nota" placeholder="Ej: Jugo de Naranja">
+
+    <label for="input-cantidad-elemento-nota">Cantidad:</label>
+    <input type="number" id="input-cantidad-elemento-nota" min="1" placeholder="Ej: 10">
+
+    <label for="select-tipo-elemento-nota">Tipo:</label>
+    <select id="select-tipo-elemento-nota">
+      <option value="unidad">Unidad</option>
+      <option value="paquete">Paquete</option>
+    </select>
+    
+    <div style="display: flex; gap: 30px;">
+      <div>
+        <label for="input-costo-elemento-nota">Costo:</label>
+        <input type="number" id="input-costo-elemento-nota" min="0" placeholder="Ej: 50">
+      </div>
+      <div>
+        <label for="input-precio-elemento-nota">Precio:</label>
+        <input type="number" id="input-precio-elemento-nota" min="0" placeholder="Ej: 100">
+      </div>
+    </div>
+
+    <label for="select-categoria-nota">Categoría:</label>
+    <select id="select-categoria-nota">
+      <!-- Se llenará dinámicamente con categorías existentes -->
+    </select>
+
+    <div class="modal-buttons-nota">
+      <button id="btn-cancelar-elemento-nota" class="modal-btn-nota btn-cancel-nota">Cancelar</button>
+      <button id="btn-agregar-elemento-nota" class="modal-btn-nota btn-add-nota">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Popup para agregar un nuevo gasto -->
+<div id="modal-nuevo-gasto-container" class="modal-gasto">
+  <div class="modal-gasto-content">
+    <span id="cerrar-modal-nuevo-gasto" class="cerrar-modal-gasto">&times;</span>
+    <h2>Agregar Nuevo Gasto</h2>
+    
+    <label for="input-nombre-nuevo-gasto">Nombre del Gasto:</label>
+    <input type="text" id="input-nombre-nuevo-gasto" placeholder="Ej. Compra Super">
+
+    <label for="input-monto-nuevo-gasto">Monto:</label>
+    <input type="number" id="input-monto-nuevo-gasto" placeholder="Ej. 250" min="0">
+
+    <div class="modal-gasto-buttons">
+      <button id="cancelar-nuevo-gasto-btn" class="modal-gasto-btn cancelar-nuevo-gasto-btn">Cancelar</button>
+      <button id="aceptar-nuevo-gasto-btn" class="modal-gasto-btn aceptar-nuevo-gasto-btn">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para actualizar categoría -->
+<div id="modalActualizarCategoria" class="modal-categoria">
+  <div class="modal-content-categoria">
+    <h2>Actualizar Categoría</h2>
+    <input type="text" id="inputNuevoNombreCategoria" placeholder="Nuevo nombre" maxlength="16">
+    <div class="modal-buttons">
+      <button id="btnCancelarActualizarCategoria">Cancelar</button>
+      <button id="btnGuardarActualizarCategoria">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Nuevo Recordatorio -->
+<div id="modalNuevoRecordatorio" class="modal-recordatorio">
+  <div class="modal-recordatorio-content">
+    <h2>Nuevo Recordatorio</h2>
+    <label for="tituloRecordatorio">Título:</label>
+    <input type="text" id="tituloRecordatorio" placeholder="Ingrese el título">
+
+    <label for="descripcionRecordatorio">Descripción:</label>
+    <textarea id="descripcionRecordatorio" placeholder="Escribe aquí el recordatorio"></textarea>
+
+    <div class="modal-recordatorio-buttons">
+      <button id="cancelarRecordatorio">Cancelar</button>
+      <button id="guardarRecordatorio">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para actualizar un recordatorio -->
+<div id="modalActualizarNotaRecordatorio" class="modal-nota-recordatorio">
+  <div class="modal-contenido-nota-recordatorio">
+    <h2>Actualizar Recordatorio</h2>
+    <label for="inputActualizarTituloNotaRecordatorio">Título:</label>
+    <input type="text" id="inputActualizarTituloNotaRecordatorio" class="modal-input-nota-recordatorio">
+    
+    <label for="inputActualizarContenidoNotaRecordatorio">Descripción:</label>
+    <textarea id="inputActualizarContenidoNotaRecordatorio" class="modal-textarea-nota-recordatorio"></textarea>
+    
+    <div class="modal-botones-nota-recordatorio">
+      <button id="cancelarActualizarNotaRecordatorio" class="modal-btn-nota-recordatorio modal-btn-cancelar-nota-recordatorio">Cancelar</button>
+      <button id="guardarActualizarNotaRecordatorio" class="modal-btn-nota-recordatorio modal-btn-aceptar-nota-recordatorio">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para actualiazar un gasto-->
+  <div class="fondo-modal-actualizar-gastos" id="fondo-modal-actualizar-gastos">
+    <div class="contenido-modal-actualizar-gastos">
+      <div class="encabezado-modal-actualizar-gastos">
+        <h2>Actualizar Gasto</h2>
+        <button id="cerrar-modal-actualizar-gastos" class="boton-cerrar-modal-actualizar-gastos">&times;</button>
+      </div>
+      <div class="cuerpo-modal-actualizar-gastos">
+        <label for="nombre-gasto-modal">Nombre del Gasto</label>
+        <input type="text" id="nombre-gasto-modal" placeholder="Ej. Cena en restaurante">
+
+        <label for="fecha-gasto-modal">Fecha</label>
+        <input type="date" id="fecha-gasto-modal">
+
+        <label for="hora-gasto-modal">Hora</label>
+        <div class="contenedor-hora-modal-actualizar-gastos">
+          <input type="time" id="hora-gasto-modal">
+          <button class="boton-modal-actualizar-gastos" type="button" id="boton-hora-actual-modal">Hora Actual</button>
+        </div>
+
+        <label for="monto-gasto-modal">Monto</label>
+        <input type="number" id="monto-gasto-modal" placeholder="Ej. 1500">
+
+        <p style="display: none;" id="contenedor-id-secreto-gasto"></p>
+      </div>
+      <div class="pie-modal-actualizar-gastos">
+        <button class="boton-guardar-modal-actualizar-gastos" id="guardar-modal-actualizar-gastos">Guardar Cambios</button>
+        <button class="boton-modal-actualizar-gastos" id="cancelar-modal-actualizar-gastos">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de categorías -->
+  <div id="modal-contenido-categoria" class="modal-contenido-categoria">
+    <div class="modal-contenido-categoria-content">
+      <div class="modal-contenido-categoria-header">
+        <h3 id="titulo-modal-productos">Productos de Frutas</h3>
+        <button class="close-btn-contenido-categoria" onclick="cerrarModalContenidoCategoria()">&times;</button>
+      </div>
+      <div class="tabla-contenido-producto-scroll">
+        <table class="table-contenido-categoria">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cantidad</th>
+              <th>Tipo</th>
+              <th>Costo</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody id="contenedorDeProductos"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de detalle de producto -->
+  <div id="modalProducto" class="modal-detalles-producto">
+    <div class="modal-contenido-detalles-producto">
+      <div class="modal-header-detalles-producto">
+        <h3>Detalle del Producto</h3>
+        <button class="close-btn-contenido-categoria" onclick="cerrarModalProducto()">&times;</button>
+      </div>
+      <div id="detalleProducto">
+        <!-- Información del producto se mostrará aquí -->
+      </div>
+      <div class="modal-contenido-categoria-footer">
+        <button id="boton-eliminar-producto">Eliminar Producto</button>
+        <button id="boton-actualizar-producto"   >Actualizar Producto</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./scripts/configuracionDeSistema.js"></script>
+  <script src="./scripts/almacenamientoInterno.js"></script>
+  <script src="./scripts/script.js"></script>
+</body>
+</html>
