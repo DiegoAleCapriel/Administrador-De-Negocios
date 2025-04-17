@@ -1,7 +1,7 @@
 {
   "name": "Administrador de Negocios",
   "short_name": "AdminNegocio",
-  "start_url": "/",
+  "start_url": "/Administrador-De-Negocios/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2196f3",
